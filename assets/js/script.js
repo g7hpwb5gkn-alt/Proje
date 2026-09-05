@@ -2,6 +2,8 @@
 // Küçük, bağımsız etkileşim betikleri: mobil menü, scroll reveal, sayaç animasyonu, iletişim formu.
 
 document.addEventListener('DOMContentLoaded', function () {
+  var prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   // Yıl
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -24,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
   // Scroll reveal
   var revealEls = document.querySelectorAll('.reveal');
-  if ('IntersectionObserver' in window) {
+  if (prefersReducedMotion) {
+    revealEls.forEach(function (el) { el.classList.add('is-visible'); });
+  } else if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -48,6 +52,10 @@ document.addEventListener('DOMContentLoaded', function () {
       var target = parseFloat(el.getAttribute('data-count')) || 0;
       var decimal = el.getAttribute('data-decimal');
       var suffix = el.getAttribute('data-suffix') || '';
+      if (prefersReducedMotion) {
+        el.textContent = target + (decimal ? ',' + decimal : '') + suffix;
+        return;
+      }
       var duration = 1400;
       var start = null;
 
