@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Danışan Haftalık Takip Formu | Nurullah Değer</title>
+<meta name="description" content="Nurullah Değer'in AGS &amp; KPSS danışmanlığı için Plan Defteri yöntemine dayalı danışan haftalık takip formu.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AF%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+  /* ---------- Takip formu sayfaya özel stiller ---------- */
+  body{ background: var(--cream-soft); }
+  .tf-toolbar{
+    position: sticky; top:0; z-index:500; background: var(--header-bg); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line); padding:14px 0;
+  }
+  .tf-toolbar-inner{ display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap; }
+  .tf-toolbar-inner .brand{ display:flex; align-items:center; gap:12px; font-weight:800; }
+  .tf-toolbar-actions{ display:flex; gap:12px; }
+  .tf-toolbar-actions .btn{ padding:11px 20px; font-size:.85rem; }
+
+  .tf-page{ max-width: 900px; margin: 40px auto 80px; padding: 0 24px; }
+  .tf-sheet{
+    background: var(--paper); border:1px solid var(--line); border-radius: var(--radius-lg);
+    box-shadow: var(--shadow); padding: 48px 44px; display:grid; gap:38px;
+  }
+  .tf-head{ text-align:center; border-bottom:1px dashed var(--line); padding-bottom:28px; }
+  .tf-head .eyebrow{ margin:0 auto 14px; }
+  .tf-head h1{ font-size: clamp(1.6rem, 3vw, 2.1rem); margin-bottom:8px; }
+  .tf-head p{ color: var(--ink-soft); margin:0; }
+
+  .tf-section{ display:grid; gap:16px; }
+  .tf-section-title{
+    display:flex; align-items:center; gap:10px; font-family: var(--font-display); font-size:1.2rem; color: var(--ink);
+  }
+  .tf-section-title .num{
+    width:30px; height:30px; border-radius:50%; background: var(--terracotta); color:#fff; font-family: var(--font-body);
+    font-weight:800; font-size:.85rem; display:grid; place-items:center; flex-shrink:0;
+  }
+  .tf-section-desc{ margin:-6px 0 0 40px; color: var(--ink-soft); font-size:.88rem; }
+
+  .tf-grid{ display:grid; gap:16px; }
+  .tf-grid--2{ grid-template-columns: repeat(2, 1fr); }
+  .tf-grid--3{ grid-template-columns: repeat(3, 1fr); }
+  .tf-grid--4{ grid-template-columns: repeat(4, 1fr); }
+  .tf-field{ display:grid; gap:6px; margin-left:40px; }
+  .tf-field label{ font-size:.8rem; font-weight:700; color: var(--ink-soft); }
+  .tf-field input, .tf-field select, .tf-field textarea{
+    border:1px solid var(--line); border-radius: var(--radius-sm); padding:11px 14px; font-family: inherit;
+    font-size:.94rem; background: var(--cream-soft); color: var(--ink); resize: vertical; width:100%;
+  }
+  .tf-field input:focus, .tf-field select:focus, .tf-field textarea:focus{ outline:2px solid var(--terracotta); outline-offset:1px; }
+  .tf-grid > .tf-field:first-child, .tf-grid--full{ margin-left:0; }
+  .tf-full{ grid-column: 1 / -1; }
+
+  /* Hedef listesi */
+  .tf-goal-list{ display:grid; gap:10px; margin-left:40px; }
+  .tf-goal-row{ display:grid; grid-template-columns: 28px 1fr 110px; align-items:center; gap:12px; }
+  .tf-goal-row input[type="text"]{
+    border:none; border-bottom:1px solid var(--line); background:transparent; padding:8px 2px; font-size:.94rem; color: var(--ink);
+  }
+  .tf-goal-row input[type="text"]:focus{ outline:none; border-bottom-color: var(--terracotta); }
+  .tf-check{ width:22px; height:22px; accent-color: var(--terracotta); cursor:pointer; }
+  .tf-status-select{
+    border:1px solid var(--line); border-radius:999px; padding:6px 10px; font-size:.78rem; font-weight:700;
+    background: var(--cream-soft); color: var(--ink);
+  }
+
+  /* Tablo */
+  .tf-table-wrap{ margin-left:40px; overflow-x:auto; }
+  table.tf-table{ width:100%; border-collapse: collapse; font-size:.86rem; min-width:640px; }
+  table.tf-table th{
+    text-align:left; font-size:.72rem; text-transform:uppercase; letter-spacing:.04em; color: var(--ink-soft);
+    padding:0 8px 8px; border-bottom:1px solid var(--line);
+  }
+  table.tf-table td{ padding:6px 8px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  table.tf-table input{
+    width:100%; border:none; background:transparent; padding:6px 2px; font-size:.86rem; color: var(--ink); font-family: inherit;
+  }
+  table.tf-table input:focus{ outline:none; background: var(--cream-soft); border-radius:6px; }
+  table.tf-table input.tf-num{ text-align:center; }
+  .tf-table-note{ margin:10px 0 0; font-size:.78rem; color: var(--ink-soft); }
+
+  /* Ölçek (1-10) */
+  .tf-scale-row{ display:grid; grid-template-columns: 200px 1fr; align-items:center; gap:16px; margin-left:40px; }
+  .tf-scale-row + .tf-scale-row{ margin-top:2px; }
+  .tf-scale-row label{ font-size:.88rem; font-weight:700; }
+  .tf-scale{ display:flex; gap:6px; flex-wrap:wrap; }
+  .tf-scale-opt{ display:flex; flex-direction:column; align-items:center; gap:4px; font-size:.68rem; color: var(--ink-soft); }
+  .tf-scale-opt input{ width:16px; height:16px; accent-color: var(--terracotta); cursor:pointer; }
+  .tf-scale-labels{ display:flex; justify-content:space-between; margin-left:216px; font-size:.72rem; color: var(--ink-soft); }
+
+  /* Soru otopsisi checklist */
+  .tf-checklist{ display:grid; gap:10px; margin-left:40px; }
+  .tf-checklist-item{ display:flex; align-items:flex-start; gap:12px; font-size:.92rem; }
+  .tf-checklist-item input{ margin-top:3px; }
+
+  .tf-signatures{ display:grid; grid-template-columns: 1fr 1fr; gap:40px; margin-top:10px; }
+  .tf-signature{ text-align:center; }
+  .tf-signature .line{ border-top:1px solid var(--ink-soft); margin-top:56px; padding-top:8px; font-size:.82rem; color: var(--ink-soft); }
+
+  .tf-footnote{ text-align:center; font-size:.78rem; color: var(--ink-soft); }
+
+  @media (max-width: 760px){
+    .tf-sheet{ padding:32px 20px; }
+    .tf-grid--2, .tf-grid--3, .tf-grid--4{ grid-template-columns: 1fr; }
+    .tf-field, .tf-goal-list, .tf-table-wrap, .tf-scale-row, .tf-checklist{ margin-left:0; }
+    .tf-scale-labels{ margin-left:0; }
+    .tf-section-desc{ margin-left:0; }
+    .tf-signatures{ grid-template-columns: 1fr; }
+  }
+
+  @media print{
+    .tf-toolbar{ display:none; }
+    body{ background:#fff; }
+    .tf-page{ margin:0; max-width:none; padding:0; }
+    .tf-sheet{ box-shadow:none; border:none; border-radius:0; padding:0; }
+    .tf-field input, .tf-field select, .tf-field textarea, table.tf-table input{ background:transparent; }
+    a[href]::after{ content:none !important; }
+    @page{ size: A4; margin: 14mm; }
+  }
+</style>
+</head>
+<body>
+
+<header class="tf-toolbar">
+  <div class="container tf-toolbar-inner">
+    <a href="index.html" class="brand">
+      <span class="brand-mark">ND</span>
+      <span class="brand-text">Nurullah Değer <em>AGS &amp; KPSS</em></span>
+    </a>
+    <div class="tf-toolbar-actions">
+      <a class="btn btn-ghost" href="index.html">← Ana Sayfa</a>
+      <button type="button" class="btn btn-primary" onclick="window.print()">🖨️ Yazdır / PDF Kaydet</button>
+    </div>
+  </div>
+</header>
+
+<main class="tf-page">
+  <form class="tf-sheet" id="takipFormu" onsubmit="return false;">
+
+    <div class="tf-head">
+      <p class="eyebrow"><span class="dot"></span>Plan Defteri Yöntemi</p>
+      <h1>Danışan Haftalık Takip Formu</h1>
+      <p>MEB-AGS &amp; KPSS danışmanlık sürecinde haftalık ilerlemeyi, çalışma verilerini ve psikolojik durumu kayıt altına almak için kullanılır.</p>
+    </div>
+
+    <!-- 1. Danışan Bilgileri -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">1</span> Danışan Bilgileri</h2>
+      <div class="tf-grid tf-grid--4">
+        <div class="tf-field"><label for="adSoyad">Ad Soyad</label><input type="text" id="adSoyad" name="adSoyad"></div>
+        <div class="tf-field"><label for="hedefSinav">Hedef Sınav</label>
+          <select id="hedefSinav" name="hedefSinav">
+            <option>MEB-AGS</option>
+            <option>KPSS</option>
+            <option>MEB-AGS &amp; KPSS</option>
+            <option>Diğer</option>
+          </select>
+        </div>
+        <div class="tf-field"><label for="haftaNo">Hafta No</label><input type="number" min="1" id="haftaNo" name="haftaNo"></div>
+        <div class="tf-field"><label for="danisman">Danışman</label><input type="text" id="danisman" name="danisman" value="Nurullah Değer"></div>
+        <div class="tf-field"><label for="tarihBaslangic">Tarih Aralığı (Başlangıç)</label><input type="date" id="tarihBaslangic" name="tarihBaslangic"></div>
+        <div class="tf-field"><label for="tarihBitis">Tarih Aralığı (Bitiş)</label><input type="date" id="tarihBitis" name="tarihBitis"></div>
+        <div class="tf-field"><label for="branş">Alan / Branş</label><input type="text" id="branş" name="branş" placeholder="Örn. PDR / Rehberlik"></div>
+        <div class="tf-field"><label for="gorusmeSekli">Görüşme Şekli</label>
+          <select id="gorusmeSekli" name="gorusmeSekli">
+            <option>Online Görüşme</option>
+            <option>Yazılı Takip (Mesaj)</option>
+            <option>Görüşme Yapılmadı</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Bu Haftanın Hedefleri -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">2</span> Bu Haftanın Hedefleri</h2>
+      <p class="tf-section-desc">Geçen görüşmede belirlenen Plan Defteri hedeflerini ve gerçekleşme durumunu işaretleyin.</p>
+      <div class="tf-goal-list">
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check"><input type="text" placeholder="Hedef 1"><select class="tf-status-select"><option>Durum</option><option>✅ Tamamlandı</option><option>🟡 Kısmen</option><option>❌ Yapılmadı</option></select></div>
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check"><input type="text" placeholder="Hedef 2"><select class="tf-status-select"><option>Durum</option><option>✅ Tamamlandı</option><option>🟡 Kısmen</option><option>❌ Yapılmadı</option></select></div>
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check"><input type="text" placeholder="Hedef 3"><select class="tf-status-select"><option>Durum</option><option>✅ Tamamlandı</option><option>🟡 Kısmen</option><option>❌ Yapılmadı</option></select></div>
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check"><input type="text" placeholder="Hedef 4"><select class="tf-status-select"><option>Durum</option><option>✅ Tamamlandı</option><option>🟡 Kısmen</option><option>❌ Yapılmadı</option></select></div>
+      </div>
+    </div>
+
+    <!-- 3. Ders Bazlı Çalışma Takibi -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">3</span> Ders Bazlı Çalışma Takibi</h2>
+      <p class="tf-section-desc">Bu hafta çözülen soru ve konu verilerini ders bazında girin.</p>
+      <div class="tf-table-wrap">
+        <table class="tf-table">
+          <thead>
+            <tr>
+              <th style="min-width:150px">Ders / Konu</th>
+              <th>Çözülen</th>
+              <th>Doğru</th>
+              <th>Yanlış</th>
+              <th>Boş</th>
+              <th>Net</th>
+              <th style="min-width:160px">Not</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><input type="text" placeholder="Genel Yetenek"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0" step="0.01"></td><td><input type="text"></td></tr>
+            <tr><td><input type="text" placeholder="Genel Kültür"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0" step="0.01"></td><td><input type="text"></td></tr>
+            <tr><td><input type="text" placeholder="Eğitim Bilimleri"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0" step="0.01"></td><td><input type="text"></td></tr>
+            <tr><td><input type="text" placeholder="Alan Bilgisi"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0" step="0.01"></td><td><input type="text"></td></tr>
+            <tr><td><input type="text" placeholder="Diğer"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0"></td><td><input class="tf-num" type="number" min="0" step="0.01"></td><td><input type="text"></td></tr>
+          </tbody>
+        </table>
+        <p class="tf-table-note">Toplam çalışma süresi: <input type="text" style="display:inline-block;width:120px;border:none;border-bottom:1px solid var(--line);background:transparent;" placeholder="Örn. 18 saat"> · Plan Defteri'ne uygunluk: <input type="text" style="display:inline-block;width:100px;border:none;border-bottom:1px solid var(--line);background:transparent;" placeholder="% ..."></p>
+      </div>
+    </div>
+
+    <!-- 4. Yanlış Soru Otopsisi -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">4</span> Yanlış Soru Otopsisi (5 Adım)</h2>
+      <p class="tf-section-desc">Yapay zeka destekli soru otopsisi sürecinin bu hafta uygulanıp uygulanmadığını kontrol edin.</p>
+      <div class="tf-checklist">
+        <label class="tf-checklist-item"><input type="checkbox"> Yanlış/boş sorular tek tek tekrar okundu ve çözüldü.</label>
+        <label class="tf-checklist-item"><input type="checkbox"> Hata türü belirlendi (bilgi eksikliği / dikkat hatası / yanlış yorumlama).</label>
+        <label class="tf-checklist-item"><input type="checkbox"> Doğru çözüm yöntemi not edilerek Plan Defteri'ne işlendi.</label>
+        <label class="tf-checklist-item"><input type="checkbox"> Aynı konudan benzer soru çözülerek pekiştirme yapıldı.</label>
+        <label class="tf-checklist-item"><input type="checkbox"> Tekrarı gereken konular gelecek haftanın programına eklendi.</label>
+      </div>
+      <div class="tf-field" style="margin-left:40px;">
+        <label for="enSikHata">Bu hafta en sık görülen hata türü / konu</label>
+        <input type="text" id="enSikHata" name="enSikHata">
+      </div>
+    </div>
+
+    <!-- 5. Psikolojik Durum & Motivasyon -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">5</span> Psikolojik Durum &amp; Motivasyon</h2>
+      <p class="tf-section-desc">1 (çok düşük) — 10 (çok yüksek) arasında işaretleyin.</p>
+
+      <div class="tf-scale-row">
+        <label>Motivasyon</label>
+        <div class="tf-scale">
+          <!-- 1-10 -->
+          <label class="tf-scale-opt">1<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">2<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">3<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">4<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">5<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">6<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">7<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">8<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">9<input type="radio" name="motivasyon"></label>
+          <label class="tf-scale-opt">10<input type="radio" name="motivasyon"></label>
+        </div>
+      </div>
+      <div class="tf-scale-row">
+        <label>Sınav Kaygısı</label>
+        <div class="tf-scale">
+          <label class="tf-scale-opt">1<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">2<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">3<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">4<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">5<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">6<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">7<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">8<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">9<input type="radio" name="kaygi"></label>
+          <label class="tf-scale-opt">10<input type="radio" name="kaygi"></label>
+        </div>
+      </div>
+      <div class="tf-scale-row">
+        <label>Enerji / Uyku Düzeni</label>
+        <div class="tf-scale">
+          <label class="tf-scale-opt">1<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">2<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">3<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">4<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">5<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">6<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">7<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">8<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">9<input type="radio" name="enerji"></label>
+          <label class="tf-scale-opt">10<input type="radio" name="enerji"></label>
+        </div>
+      </div>
+      <div class="tf-scale-row">
+        <label>Genel Ruh Hali</label>
+        <div class="tf-scale">
+          <label class="tf-scale-opt">1<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">2<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">3<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">4<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">5<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">6<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">7<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">8<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">9<input type="radio" name="ruhHali"></label>
+          <label class="tf-scale-opt">10<input type="radio" name="ruhHali"></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 6. Değerlendirmeler -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">6</span> Haftanın Değerlendirmesi</h2>
+      <div class="tf-grid tf-grid--2">
+        <div class="tf-field tf-full">
+          <label for="danisanYorumu">Danışanın kendi değerlendirmesi</label>
+          <textarea id="danisanYorumu" name="danisanYorumu" rows="4" placeholder="Danışanın bu hafta nasıl geçtiğine dair kendi ifadeleri..."></textarea>
+        </div>
+        <div class="tf-field tf-full">
+          <label for="danismanNotu">Danışman gözlem ve notları</label>
+          <textarea id="danismanNotu" name="danismanNotu" rows="4" placeholder="Gözlemler, dikkat çeken noktalar, öneriler..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Gelecek Hafta Hedefleri -->
+    <div class="tf-section">
+      <h2 class="tf-section-title"><span class="num">7</span> Gelecek Hafta Hedefleri</h2>
+      <p class="tf-section-desc">Bir sonraki görüşmeye kadar Plan Defteri'ne işlenecek yeni hedefler.</p>
+      <div class="tf-goal-list">
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check" disabled><input type="text" placeholder="Hedef 1"><span></span></div>
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check" disabled><input type="text" placeholder="Hedef 2"><span></span></div>
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check" disabled><input type="text" placeholder="Hedef 3"><span></span></div>
+        <div class="tf-goal-row"><input type="checkbox" class="tf-check" disabled><input type="text" placeholder="Hedef 4"><span></span></div>
+      </div>
+      <div class="tf-field" style="margin-left:40px;">
+        <label for="sonrakiGorusme">Sonraki görüşme tarihi</label>
+        <input type="date" id="sonrakiGorusme" name="sonrakiGorusme" style="max-width:220px;">
+      </div>
+    </div>
+
+    <div class="tf-signatures">
+      <div class="tf-signature"><div class="line">Danışan İmza / Onay</div></div>
+      <div class="tf-signature"><div class="line">Danışman İmza — Nurullah Değer</div></div>
+    </div>
+
+    <p class="tf-footnote">Bu form, Nurullah Değer'in Plan Defteri yöntemine dayalı AGS &amp; KPSS danışmanlık sürecinin bir parçasıdır. © <span id="tfYear"></span></p>
+  </form>
+</main>
+
+<script>document.getElementById('tfYear').textContent = new Date().getFullYear();</script>
+</body>
+</html>

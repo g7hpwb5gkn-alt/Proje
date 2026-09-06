@@ -5,10 +5,25 @@ Psk. Dan. Nurullah Değer'in (Instagram: [@pd.nurullahdeger](https://www.instagr
 ## Dosya yapısı
 
 ```
-index.html            Sayfanın tamamı (bölümler: hero, hakkımda, yöntem, hizmetler, başarı, SSS, iletişim)
-assets/css/style.css  Tüm stiller
-assets/js/script.js   Mobil menü, scroll animasyonları, sayaç ve iletişim formu davranışı
+index.html                          Sayfanın tamamı (bölümler: hero, hakkımda, yöntem, hizmetler, başarı, SSS, iletişim)
+danisan-haftalik-takip-formu.html   Danışan haftalık takip formu (Plan Defteri yöntemine göre, yazdırılabilir)
+assets/css/style.css                Tüm stiller
+assets/js/script.js                 Mobil menü, scroll animasyonları, sayaç ve iletişim formu davranışı
 ```
+
+## Danışan haftalık takip formu
+
+`danisan-haftalik-takip-formu.html`, danışmanlık sürecinde her danışanla haftalık olarak doldurulacak, sitenin marka diliyle (renkler, tipografi, Plan Defteri metodolojisi) uyumlu bir formdur:
+
+- Danışan bilgileri ve görüşme detayları
+- Haftanın hedefleri ve gerçekleşme durumu
+- Ders bazlı çözülen soru/net takibi
+- 5 adımlı yanlış soru otopsisi kontrol listesi
+- Motivasyon, sınav kaygısı, enerji ve ruh hali için 1-10 ölçekleri
+- Danışan/danışman değerlendirmeleri ve gelecek hafta hedefleri
+- İmza alanları
+
+Form tarayıcıda doldurulup sağ üstteki **"Yazdır / PDF Kaydet"** butonuyla (veya `Ctrl/Cmd + P`) PDF olarak kaydedilebilir ya da yazdırılabilir; doldurulan veriler herhangi bir sunucuya gönderilmez, sadece o an açık olan sayfada tutulur.
 
 ## Yayına almadan önce yapılması gerekenler
 
