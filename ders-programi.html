@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KPSS/AGS & PDR ÖABT Haftalık Ders Programı</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc',
+            400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca',
+            800: '#3730a3', 900: '#312e81'
+          }
+        }
+      }
+    }
+  };
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+  ::-webkit-scrollbar { height: 8px; width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background-color: rgba(100,116,139,0.4); border-radius: 8px; }
+  .task-card { transition: background-color .2s ease, border-color .2s ease, opacity .2s ease, transform .15s ease; }
+  .task-card:hover { transform: translateY(-1px); }
+  .progress-bar-fill { transition: width .35s ease; }
+  .modal-backdrop { transition: opacity .2s ease; }
+  .modal-panel { transition: opacity .2s ease, transform .2s ease; }
+  .fade-in { animation: fadeIn .18s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .day-col::-webkit-scrollbar { width: 6px; }
+  [data-strike="true"] { text-decoration: line-through; }
+</style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen">
+
+<!-- HEADER -->
+<header class="sticky top-0 z-30 bg-white/80 dark:bg-slate-900/80 backdrop-blur border-b border-slate-200 dark:border-slate-800">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-600 to-violet-600 flex items-center justify-center text-white font-bold shadow-lg shadow-brand-600/30">📚</div>
+      <div>
+        <h1 class="text-base sm:text-lg font-bold leading-tight text-slate-900 dark:text-white">Haftalık Ders Programı</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 leading-tight">KPSS/AGS &amp; PDR ÖABT Takip Paneli</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-2 flex-wrap">
+      <button id="addTaskBtn" class="inline-flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-3.5 py-2 rounded-lg shadow-sm shadow-brand-600/30 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Yeni Çalışma Ekle
+      </button>
+      <button id="resetWeekBtn" class="inline-flex items-center gap-1.5 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm font-medium px-3 py-2 rounded-lg transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 .49-9.5L1 10"></path></svg>
+        Haftayı Sıfırla / Yeni Haftaya Başla
+      </button>
+      <button id="clearAllBtn" class="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-950/40 dark:hover:bg-red-900/50 text-red-600 dark:text-red-400 text-sm font-medium px-3 py-2 rounded-lg transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        Tüm Çalışmaları Temizle
+      </button>
+      <button id="themeToggleBtn" aria-label="Tema değiştir" class="w-9 h-9 flex items-center justify-center rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 transition">
+        <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+        <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="w-4.5 h-4.5 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- SUMMARY BAR -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 pt-5">
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+    <div class="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800">
+      <p class="text-xs text-slate-500 dark:text-slate-400">Toplam Görev</p>
+      <p id="statTotal" class="text-xl font-bold text-slate-900 dark:text-white">0</p>
+    </div>
+    <div class="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800">
+      <p class="text-xs text-slate-500 dark:text-slate-400">Tamamlanan</p>
+      <p id="statDone" class="text-xl font-bold text-emerald-600 dark:text-emerald-400">0</p>
+    </div>
+    <div class="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800">
+      <p class="text-xs text-slate-500 dark:text-slate-400">AGS Görevleri</p>
+      <p id="statAgs" class="text-xl font-bold text-blue-600 dark:text-blue-400">0</p>
+    </div>
+    <div class="bg-white dark:bg-slate-900 rounded-xl p-3.5 border border-slate-200 dark:border-slate-800">
+      <p class="text-xs text-slate-500 dark:text-slate-400">ÖABT Görevleri</p>
+      <p id="statOabt" class="text-xl font-bold text-violet-600 dark:text-violet-400">0</p>
+    </div>
+  </div>
+</div>
+
+<!-- WEEK BOARD -->
+<main class="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
+  <div id="weekBoard" class="grid gap-4" style="grid-template-columns: repeat(7, minmax(240px, 1fr)); overflow-x: auto;">
+    <!-- day columns injected by JS -->
+  </div>
+</main>
+
+<footer class="text-center text-xs text-slate-400 dark:text-slate-600 pb-8">
+  Veriler yalnızca bu tarayıcıda (localStorage) saklanır. Hiçbir veri sunucuya gönderilmez.
+</footer>
+
+<!-- TASK MODAL -->
+<div id="taskModal" class="fixed inset-0 z-50 hidden">
+  <div id="modalBackdrop" class="modal-backdrop absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0"></div>
+  <div class="relative min-h-full flex items-center justify-center p-4">
+    <div id="modalPanel" class="modal-panel opacity-0 translate-y-2 w-full max-w-lg bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
+        <h2 id="modalTitle" class="font-bold text-slate-900 dark:text-white">Yeni Çalışma Ekle</h2>
+        <button id="modalCloseBtn" class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="taskForm" class="px-5 py-4 space-y-4 max-h-[75vh] overflow-y-auto">
+        <input type="hidden" id="f-id">
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Gün Seçimi</label>
+          <select id="f-day" required class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Ders Kategorisi</label>
+          <select id="f-category" required class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Konu / Alt Başlık</label>
+          <select id="f-subcategory" required class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"></select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Çalışma Tipi</label>
+          <select id="f-studytype" required class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            <option>Konu Anlatımı</option>
+            <option>Soru Çözümü</option>
+            <option>Deneme Sınavı</option>
+            <option>Tekrar / Soru Otopsisi</option>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Hedef Soru / Süre</label>
+            <input id="f-amount" type="number" min="1" step="1" placeholder="Örn: 50" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Birim</label>
+            <select id="f-unit" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+              <option value="Soru">Soru</option>
+              <option value="Dakika">Dakika</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Özel Not</label>
+          <textarea id="f-note" rows="3" placeholder="Örn: Edimsel koşullanma pekiştireçler bitecek" class="w-full rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 resize-none"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end gap-2 pt-2">
+          <button type="button" id="modalCancelBtn" class="px-4 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Vazgeç</button>
+          <button type="submit" id="modalSubmitBtn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-600 hover:bg-brand-700 text-white shadow-sm shadow-brand-600/30 transition">Kaydet</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var STORAGE_KEY = 'kpssStudyPlanner.tasks.v1';
+  var THEME_KEY = 'kpssStudyPlanner.theme';
+
+  var DAYS = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar'];
+
+  var CATEGORIES = [
+    { key: 'ags-turkce',   group: 'AGS',  label: 'AGS Türkçe',    subs: ['Paragraf', 'Dil Bilgisi', 'Sözel Mantık'] },
+    { key: 'ags-matematik',group: 'AGS',  label: 'AGS Matematik', subs: ['Temel Matematik', 'Sayısal Mantık', 'Problem'] },
+    { key: 'ags-tarih',    group: 'AGS',  label: 'AGS Tarih',     subs: ['Genel Tarih', 'İnkılap Tarihi'] },
+    { key: 'ags-cografya', group: 'AGS',  label: 'AGS Coğrafya',  subs: ['Türkiye Coğrafyası'] },
+    { key: 'ags-mevzuat',  group: 'AGS',  label: 'AGS Mevzuat',   subs: ['Anayasa', 'Eğitim Mevzuatı', 'Türk Milli Eğitim Sistemi'] },
+    { key: 'oabt-kuramlar',  group: 'OABT', label: 'ÖABT Kuramlar',              subs: ['Klasik Kuramlar', 'Bilişsel-Davranışçı Kuramlar', 'Hümanist Kuramlar', 'Diğer Kuramlar'] },
+    { key: 'oabt-gelisim',   group: 'OABT', label: 'ÖABT Gelişim Psikolojisi',   subs: ['Bilişsel Gelişim', 'Psikososyal Gelişim', 'Ahlak Gelişimi', 'Dil Gelişimi'] },
+    { key: 'oabt-ogrenme',   group: 'OABT', label: 'ÖABT Öğrenme Psikolojisi',   subs: ['Davranışçı Yaklaşımlar', 'Bilişsel Yaklaşımlar', 'Sosyal Öğrenme Kuramı', 'Transfer'] },
+    { key: 'oabt-rehberlik', group: 'OABT', label: 'ÖABT Mesleki Rehberlik',     subs: ['Bireyi Tanıma Teknikleri', 'Mesleki Rehberlik', 'Kariyer Gelişimi Kuramları'] },
+    { key: 'oabt-grupla',    group: 'OABT', label: 'ÖABT Grupla Psik. Danışma',  subs: ['Grup Süreçleri', 'Grupla PD Teknikleri', 'Grup Liderliği'] },
+    { key: 'oabt-olcme',     group: 'OABT', label: 'ÖABT Araştırma/Ölçme-Değ.',  subs: ['Araştırma Yöntemleri', 'İstatistik', 'Test ve Ölçek Geliştirme'] },
+    { key: 'oabt-etik',      group: 'OABT', label: 'ÖABT Meslek Etiği/Yasal',    subs: ['Meslek Etiği', 'Yasal Konular ve Mevzuat'] }
+  ];
+
+  var els = {};
+  ['addTaskBtn','resetWeekBtn','clearAllBtn','themeToggleBtn','iconSun','iconMoon',
+   'weekBoard','taskModal','modalBackdrop','modalPanel','modalTitle','modalCloseBtn',
+   'modalCancelBtn','taskForm','f-id','f-day','f-category','f-subcategory','f-studytype',
+   'f-amount','f-unit','f-note','statTotal','statDone','statAgs','statOabt'
+  ].forEach(function (id) { els[id] = document.getElementById(id); });
+
+  var tasks = [];
+  var editingId = null;
+
+  function uid() {
+    return 'task_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 9);
+  }
+
+  function loadTasks() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      tasks = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(tasks)) tasks = [];
+    } catch (e) {
+      tasks = [];
+    }
+  }
+
+  function saveTasks() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }
+
+  function getCategory(key) {
+    for (var i = 0; i < CATEGORIES.length; i++) {
+      if (CATEGORIES[i].key === key) return CATEGORIES[i];
+    }
+    return null;
+  }
+
+  // ---------- THEME ----------
+  function applyTheme(theme) {
+    var root = document.documentElement;
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      els.iconSun.classList.remove('hidden');
+      els.iconMoon.classList.add('hidden');
+    } else {
+      root.classList.remove('dark');
+      els.iconSun.classList.add('hidden');
+      els.iconMoon.classList.remove('hidden');
+    }
+  }
+
+  function initTheme() {
+    var saved = localStorage.getItem(THEME_KEY);
+    var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var theme = saved || (prefersDark ? 'dark' : 'light');
+    applyTheme(theme);
+  }
+
+  els.themeToggleBtn.addEventListener('click', function () {
+    var isDark = document.documentElement.classList.contains('dark');
+    var next = isDark ? 'light' : 'dark';
+    applyTheme(next);
+    localStorage.setItem(THEME_KEY, next);
+  });
+
+  // ---------- FORM POPULATION ----------
+  function populateStaticSelects() {
+    els['f-day'].innerHTML = DAYS.map(function (d) {
+      return '<option value="' + d + '">' + d + '</option>';
+    }).join('');
+
+    var byGroup = { AGS: [], OABT: [] };
+    CATEGORIES.forEach(function (c) { byGroup[c.group].push(c); });
+
+    var html = '<optgroup label="AGS Genel Kültür / Yetenek">';
+    byGroup.AGS.forEach(function (c) { html += '<option value="' + c.key + '">' + c.label + '</option>'; });
+    html += '</optgroup><optgroup label="PDR ÖABT (Alan)">';
+    byGroup.OABT.forEach(function (c) { html += '<option value="' + c.key + '">' + c.label + '</option>'; });
+    html += '</optgroup>';
+    els['f-category'].innerHTML = html;
+  }
+
+  function populateSubcategories(categoryKey, selectedSub) {
+    var cat = getCategory(categoryKey);
+    var subs = cat ? cat.subs : [];
+    els['f-subcategory'].innerHTML = subs.map(function (s) {
+      return '<option value="' + s + '"' + (s === selectedSub ? ' selected' : '') + '>' + s + '</option>';
+    }).join('');
+  }
+
+  els['f-category'].addEventListener('change', function () {
+    populateSubcategories(this.value, null);
+  });
+
+  // ---------- MODAL ----------
+  function openModal(mode, presetDay, task) {
+    editingId = task ? task.id : null;
+    els.modalTitle.textContent = task ? 'Çalışmayı Düzenle' : 'Yeni Çalışma Ekle';
+    document.getElementById('modalSubmitBtn').textContent = task ? 'Güncelle' : 'Kaydet';
+
+    els.taskForm.reset();
+    els['f-id'].value = task ? task.id : '';
+    els['f-day'].value = task ? task.day : (presetDay || DAYS[0]);
+    els['f-category'].value = task ? task.categoryKey : CATEGORIES[0].key;
+    populateSubcategories(els['f-category'].value, task ? task.subcategory : null);
+    if (task) els['f-subcategory'].value = task.subcategory;
+    els['f-studytype'].value = task ? task.studyType : 'Konu Anlatımı';
+    els['f-amount'].value = task ? task.amount : '';
+    els['f-unit'].value = task ? task.unit : 'Soru';
+    els['f-note'].value = task ? task.note : '';
+
+    els.taskModal.classList.remove('hidden');
+    requestAnimationFrame(function () {
+      els.modalBackdrop.classList.remove('opacity-0');
+      els.modalPanel.classList.remove('opacity-0', 'translate-y-2');
+    });
+  }
+
+  function closeModal() {
+    els.modalBackdrop.classList.add('opacity-0');
+    els.modalPanel.classList.add('opacity-0', 'translate-y-2');
+    setTimeout(function () { els.taskModal.classList.add('hidden'); }, 150);
+    editingId = null;
+  }
+
+  els.addTaskBtn.addEventListener('click', function () { openModal('add', DAYS[0], null); });
+  els.modalCloseBtn.addEventListener('click', closeModal);
+  els.modalCancelBtn.addEventListener('click', closeModal);
+  els.modalBackdrop.addEventListener('click', closeModal);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !els.taskModal.classList.contains('hidden')) closeModal();
+  });
+
+  els.taskForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var categoryKey = els['f-category'].value;
+    var cat = getCategory(categoryKey);
+    var payload = {
+      day: els['f-day'].value,
+      categoryKey: categoryKey,
+      group: cat.group,
+      categoryLabel: cat.label,
+      subcategory: els['f-subcategory'].value,
+      studyType: els['f-studytype'].value,
+      amount: els['f-amount'].value ? Number(els['f-amount'].value) : null,
+      unit: els['f-unit'].value,
+      note: els['f-note'].value.trim()
+    };
+
+    if (editingId) {
+      var idx = tasks.findIndex(function (t) { return t.id === editingId; });
+      if (idx > -1) tasks[idx] = Object.assign({}, tasks[idx], payload);
+    } else {
+      payload.id = uid();
+      payload.completed = false;
+      payload.createdAt = Date.now();
+      tasks.push(payload);
+    }
+
+    saveTasks();
+    render();
+    closeModal();
+  });
+
+  // ---------- TASK ACTIONS ----------
+  function toggleComplete(id) {
+    var t = tasks.find(function (t) { return t.id === id; });
+    if (!t) return;
+    t.completed = !t.completed;
+    saveTasks();
+    render();
+  }
+
+  function deleteTask(id) {
+    if (!confirm('Bu çalışmayı silmek istediğinize emin misiniz?')) return;
+    tasks = tasks.filter(function (t) { return t.id !== id; });
+    saveTasks();
+    render();
+  }
+
+  function editTaskById(id) {
+    var t = tasks.find(function (t) { return t.id === id; });
+    if (t) openModal('edit', t.day, t);
+  }
+
+  els.resetWeekBtn.addEventListener('click', function () {
+    if (!tasks.length) return;
+    if (!confirm('Tüm görevlerin tamamlanma durumu sıfırlanacak (görevler silinmeyecek). Yeni haftaya başlamak istediğinize emin misiniz?')) return;
+    tasks.forEach(function (t) { t.completed = false; });
+    saveTasks();
+    render();
+  });
+
+  els.clearAllBtn.addEventListener('click', function () {
+    if (!tasks.length) return;
+    if (!confirm('TÜM çalışmalar kalıcı olarak silinecek. Bu işlem geri alınamaz. Onaylıyor musunuz?')) return;
+    tasks = [];
+    saveTasks();
+    render();
+  });
+
+  // ---------- RENDER ----------
+  function targetText(t) {
+    if (!t.amount) return '';
+    return t.amount + ' ' + t.unit;
+  }
+
+  function badgeClasses(group) {
+    return group === 'AGS'
+      ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+      : 'bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300';
+  }
+
+  function createTaskCardHTML(t) {
+    var done = !!t.completed;
+    var cardBase = 'task-card fade-in border rounded-xl p-3 mb-2.5 ';
+    var cardState = done
+      ? 'bg-slate-50 dark:bg-slate-800/40 border-emerald-200 dark:border-emerald-900/50'
+      : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800';
+
+    return (
+      '<div class="' + cardBase + cardState + '" data-id="' + t.id + '">' +
+        '<div class="flex items-start gap-2.5">' +
+          '<button class="toggle-btn mt-0.5 flex-shrink-0 w-5 h-5 rounded-md border-2 flex items-center justify-center transition ' +
+            (done ? 'bg-emerald-500 border-emerald-500' : 'border-slate-300 dark:border-slate-600 hover:border-brand-500') + '" data-id="' + t.id + '" aria-label="Tamamlandı işaretle">' +
+            (done ? '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' : '') +
+          '</button>' +
+          '<div class="flex-1 min-w-0">' +
+            '<div class="flex items-center justify-between gap-2">' +
+              '<span class="inline-block text-[11px] font-semibold px-2 py-0.5 rounded-full ' + badgeClasses(t.group) + '" ' + (done ? 'data-strike="true"' : '') + '>' + t.categoryLabel + '</span>' +
+              '<div class="flex items-center gap-1 flex-shrink-0">' +
+                '<button class="edit-btn w-6 h-6 flex items-center justify-center rounded text-slate-400 hover:text-brand-600 hover:bg-brand-50 dark:hover:bg-brand-900/30 transition" data-id="' + t.id + '" aria-label="Düzenle">' +
+                  '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>' +
+                '</button>' +
+                '<button class="delete-btn w-6 h-6 flex items-center justify-center rounded text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 transition" data-id="' + t.id + '" aria-label="Sil">' +
+                  '<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+                '</button>' +
+              '</div>' +
+            '</div>' +
+            '<p class="text-sm font-medium text-slate-800 dark:text-slate-100 mt-1.5 ' + (done ? 'text-slate-400 dark:text-slate-500' : '') + '" ' + (done ? 'data-strike="true"' : '') + '>' + t.subcategory + '</p>' +
+            '<div class="flex items-center gap-1.5 mt-1.5 flex-wrap">' +
+              '<span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">' + t.studyType + '</span>' +
+              (targetText(t) ? '<span class="text-[11px] font-medium px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">🎯 ' + targetText(t) + '</span>' : '') +
+            '</div>' +
+            (t.note ? '<p class="text-xs text-slate-500 dark:text-slate-400 italic mt-1.5 break-words">"' + escapeHTML(t.note) + '"</p>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function escapeHTML(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function renderDayColumn(day) {
+    var dayTasks = tasks.filter(function (t) { return t.day === day; });
+    var total = dayTasks.length;
+    var doneCount = dayTasks.filter(function (t) { return t.completed; }).length;
+    var pct = total ? Math.round((doneCount / total) * 100) : 0;
+
+    var cardsHTML = dayTasks.length
+      ? dayTasks.map(createTaskCardHTML).join('')
+      : '<p class="text-xs text-slate-400 dark:text-slate-600 text-center py-6 border border-dashed border-slate-200 dark:border-slate-800 rounded-lg">Bu gün için çalışma eklenmedi.</p>';
+
+    return (
+      '<div class="bg-white/60 dark:bg-slate-900/40 rounded-2xl border border-slate-200 dark:border-slate-800 flex flex-col min-h-[220px]">' +
+        '<div class="p-3.5 border-b border-slate-200 dark:border-slate-800">' +
+          '<div class="flex items-center justify-between mb-2">' +
+            '<h3 class="font-bold text-sm text-slate-900 dark:text-white">' + day + '</h3>' +
+            '<span class="text-xs font-semibold text-slate-500 dark:text-slate-400">' + doneCount + '/' + total + '</span>' +
+          '</div>' +
+          '<div class="w-full h-1.5 rounded-full bg-slate-200 dark:bg-slate-800 overflow-hidden">' +
+            '<div class="progress-bar-fill h-full rounded-full ' + (pct === 100 && total ? 'bg-emerald-500' : 'bg-gradient-to-r from-brand-500 to-violet-500') + '" style="width:' + pct + '%"></div>' +
+          '</div>' +
+          '<button class="add-day-btn mt-2.5 w-full text-[11px] font-semibold text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-900/20 rounded-md py-1.5 transition" data-day="' + day + '">+ Bu güne ekle</button>' +
+        '</div>' +
+        '<div class="p-3 flex-1 overflow-y-auto day-col" style="max-height: 560px;">' + cardsHTML + '</div>' +
+      '</div>'
+    );
+  }
+
+  function renderStats() {
+    var total = tasks.length;
+    var done = tasks.filter(function (t) { return t.completed; }).length;
+    var ags = tasks.filter(function (t) { return t.group === 'AGS'; }).length;
+    var oabt = tasks.filter(function (t) { return t.group === 'OABT'; }).length;
+    els.statTotal.textContent = total;
+    els.statDone.textContent = done;
+    els.statAgs.textContent = ags;
+    els.statOabt.textContent = oabt;
+  }
+
+  function render() {
+    els.weekBoard.innerHTML = DAYS.map(renderDayColumn).join('');
+    renderStats();
+  }
+
+  els.weekBoard.addEventListener('click', function (e) {
+    var toggleBtn = e.target.closest('.toggle-btn');
+    var editBtn = e.target.closest('.edit-btn');
+    var deleteBtn = e.target.closest('.delete-btn');
+    var addDayBtn = e.target.closest('.add-day-btn');
+
+    if (toggleBtn) return toggleComplete(toggleBtn.getAttribute('data-id'));
+    if (editBtn) return editTaskById(editBtn.getAttribute('data-id'));
+    if (deleteBtn) return deleteTask(deleteBtn.getAttribute('data-id'));
+    if (addDayBtn) return openModal('add', addDayBtn.getAttribute('data-day'), null);
+  });
+
+  // ---------- INIT ----------
+  initTheme();
+  populateStaticSelects();
+  populateSubcategories(CATEGORIES[0].key, null);
+  loadTasks();
+  render();
+})();
+</script>
+</body>
+</html>
