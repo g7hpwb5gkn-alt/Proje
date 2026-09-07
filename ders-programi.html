@@ -105,6 +105,23 @@
   Veriler yalnızca bu tarayıcıda (localStorage) saklanır. Hiçbir veri sunucuya gönderilmez.
 </footer>
 
+<!-- CONFIRM MODAL -->
+<div id="confirmModal" class="fixed inset-0 z-[60] hidden">
+  <div id="confirmBackdrop" class="modal-backdrop absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0"></div>
+  <div class="relative min-h-full flex items-center justify-center p-4">
+    <div id="confirmPanel" class="modal-panel opacity-0 translate-y-2 w-full max-w-sm bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden">
+      <div class="p-5">
+        <h3 id="confirmTitle" class="font-bold text-slate-900 dark:text-white text-base mb-2">Emin misiniz?</h3>
+        <p id="confirmMessage" class="text-sm text-slate-500 dark:text-slate-400"></p>
+      </div>
+      <div class="flex items-center justify-end gap-2 px-5 py-4 border-t border-slate-200 dark:border-slate-800">
+        <button type="button" id="confirmCancelBtn" class="px-4 py-2 text-sm font-medium rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition">Vazgeç</button>
+        <button type="button" id="confirmOkBtn" class="px-4 py-2 text-sm font-semibold rounded-lg bg-red-600 hover:bg-red-700 text-white transition">Onayla</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- TASK MODAL -->
 <div id="taskModal" class="fixed inset-0 z-50 hidden">
   <div id="modalBackdrop" class="modal-backdrop absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0"></div>
@@ -188,13 +205,17 @@
     { key: 'ags-tarih',    group: 'AGS',  label: 'AGS Tarih',     subs: ['Genel Tarih', 'İnkılap Tarihi'] },
     { key: 'ags-cografya', group: 'AGS',  label: 'AGS Coğrafya',  subs: ['Türkiye Coğrafyası'] },
     { key: 'ags-mevzuat',  group: 'AGS',  label: 'AGS Mevzuat',   subs: ['Anayasa', 'Eğitim Mevzuatı', 'Türk Milli Eğitim Sistemi'] },
-    { key: 'oabt-kuramlar',  group: 'OABT', label: 'ÖABT Kuramlar',              subs: ['Klasik Kuramlar', 'Bilişsel-Davranışçı Kuramlar', 'Hümanist Kuramlar', 'Diğer Kuramlar'] },
-    { key: 'oabt-gelisim',   group: 'OABT', label: 'ÖABT Gelişim Psikolojisi',   subs: ['Bilişsel Gelişim', 'Psikososyal Gelişim', 'Ahlak Gelişimi', 'Dil Gelişimi'] },
-    { key: 'oabt-ogrenme',   group: 'OABT', label: 'ÖABT Öğrenme Psikolojisi',   subs: ['Davranışçı Yaklaşımlar', 'Bilişsel Yaklaşımlar', 'Sosyal Öğrenme Kuramı', 'Transfer'] },
-    { key: 'oabt-rehberlik', group: 'OABT', label: 'ÖABT Mesleki Rehberlik',     subs: ['Bireyi Tanıma Teknikleri', 'Mesleki Rehberlik', 'Kariyer Gelişimi Kuramları'] },
-    { key: 'oabt-grupla',    group: 'OABT', label: 'ÖABT Grupla Psik. Danışma',  subs: ['Grup Süreçleri', 'Grupla PD Teknikleri', 'Grup Liderliği'] },
-    { key: 'oabt-olcme',     group: 'OABT', label: 'ÖABT Araştırma/Ölçme-Değ.',  subs: ['Araştırma Yöntemleri', 'İstatistik', 'Test ve Ölçek Geliştirme'] },
-    { key: 'oabt-etik',      group: 'OABT', label: 'ÖABT Meslek Etiği/Yasal',    subs: ['Meslek Etiği', 'Yasal Konular ve Mevzuat'] }
+    { key: 'oabt-temelkavramlar', group: 'OABT', label: 'ÖABT Temel Psikolojik Kavramlar', subs: ['Psikolojiye Giriş', 'Gelişim Psikolojisi', 'Öğrenme Psikolojisi', 'Kişilik Kuramları', 'Duygu, Güdülenme ve Zekâ'] },
+    { key: 'oabt-sosyal',         group: 'OABT', label: 'ÖABT Sosyal Psikoloji',           subs: ['Tutumlar ve Tutum Değişimi', 'Sosyal Biliş ve Algı', 'Grup Süreçleri', 'Uyma, Boyun Eğme ve İtaat'] },
+    { key: 'oabt-uyum',           group: 'OABT', label: 'ÖABT Davranış ve Uyum Problemleri', subs: ['Dikkat Eksikliği ve Hiperaktivite Bozukluğu', 'Kaygı Bozuklukları', 'Depresyon', 'Özgül Öğrenme Güçlüğü', 'Otizm Spektrum Bozukluğu', 'Davranım Bozukluğu ve Uyum Problemleri'] },
+    { key: 'oabt-kuramlar',       group: 'OABT', label: 'ÖABT Psikolojik Danışma Kuramları', subs: ['Psikanalitik Kuram', 'Bilişsel ve Bilişsel-Davranışçı Yaklaşımlar', 'Varoluşçu ve Gestalt Yaklaşım', 'Kişi Merkezli Yaklaşım', 'Gerçeklik Terapisi', 'Aile Sistemleri Yaklaşımı'] },
+    { key: 'oabt-bireyitanima',   group: 'OABT', label: 'ÖABT Bireyi Tanıma Teknikleri',   subs: ['Test Dışı Teknikler (Gözlem, Görüşme, Sosyometri)', 'Otobiyografi ve Vaka İncelemesi', 'Zekâ ve Kişilik Testleri', 'İlgi ve Yetenek Testleri'] },
+    { key: 'oabt-danisma',        group: 'OABT', label: 'ÖABT Bireyle ve Grupla Danışma',  subs: ['Danışma Süreci ve Aşamaları', 'Terapötik İlişki ve Temel Beceriler', 'Grup Süreçleri ve Grup Dinamiği', 'Grupla Psikolojik Danışma Teknikleri'] },
+    { key: 'oabt-mesleki',        group: 'OABT', label: 'ÖABT Mesleki Rehberlik',          subs: ['Ginzberg Kariyer Gelişim Kuramı', 'Super Yaşam Boyu Gelişim Kuramı', 'Holland Mesleki Tipoloji Kuramı', 'Kariyer Danışmanlığı Uygulamaları'] },
+    { key: 'oabt-okulpdr',        group: 'OABT', label: 'ÖABT Eğitsel Rehberlik / Okul PDR', subs: ['Rehberlik Hizmet Alanları (Oryantasyon, Bilgi Verme, İzleme)', 'Eğitsel, Mesleki ve Kişisel-Sosyal Rehberlik', 'Önleyici ve Gelişimsel Rehberlik'] },
+    { key: 'oabt-turkegitim',     group: 'OABT', label: 'ÖABT Türk Eğitim Sisteminde Rehberlik', subs: ['Rehberliğin Tarihsel Gelişimi', 'İlgili Mevzuat ve Yönetmelikler', 'Rehberlik ve Araştırma Merkezleri (RAM)'] },
+    { key: 'oabt-arastirma',      group: 'OABT', label: 'ÖABT Araştırma ve İstatistik',    subs: ['Nicel ve Nitel Araştırma Desenleri', 'Betimsel İstatistik', 'Güvenirlik ve Geçerlik'] },
+    { key: 'oabt-etik',           group: 'OABT', label: 'ÖABT Meslek Etiği/Yasal Konular', subs: ['Gizlilik ve Sır Saklama', 'Mesleki Sınırlılıklar', 'Etik İlkeler ve Yasal Sorumluluklar'] }
   ];
 
   var els = {};
@@ -359,6 +380,49 @@
     closeModal();
   });
 
+  // ---------- CONFIRM DIALOG ----------
+  var confirmEls = {
+    modal: document.getElementById('confirmModal'),
+    backdrop: document.getElementById('confirmBackdrop'),
+    panel: document.getElementById('confirmPanel'),
+    title: document.getElementById('confirmTitle'),
+    message: document.getElementById('confirmMessage'),
+    cancelBtn: document.getElementById('confirmCancelBtn'),
+    okBtn: document.getElementById('confirmOkBtn')
+  };
+  var pendingConfirmAction = null;
+
+  function askConfirm(message, onConfirm, opts) {
+    opts = opts || {};
+    confirmEls.title.textContent = opts.title || 'Emin misiniz?';
+    confirmEls.message.textContent = message;
+    confirmEls.okBtn.textContent = opts.okLabel || 'Onayla';
+    pendingConfirmAction = onConfirm;
+    confirmEls.modal.classList.remove('hidden');
+    requestAnimationFrame(function () {
+      confirmEls.backdrop.classList.remove('opacity-0');
+      confirmEls.panel.classList.remove('opacity-0', 'translate-y-2');
+    });
+  }
+
+  function closeConfirm() {
+    confirmEls.backdrop.classList.add('opacity-0');
+    confirmEls.panel.classList.add('opacity-0', 'translate-y-2');
+    setTimeout(function () { confirmEls.modal.classList.add('hidden'); }, 150);
+    pendingConfirmAction = null;
+  }
+
+  confirmEls.cancelBtn.addEventListener('click', closeConfirm);
+  confirmEls.backdrop.addEventListener('click', closeConfirm);
+  confirmEls.okBtn.addEventListener('click', function () {
+    var action = pendingConfirmAction;
+    closeConfirm();
+    if (action) action();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !confirmEls.modal.classList.contains('hidden')) closeConfirm();
+  });
+
   // ---------- TASK ACTIONS ----------
   function toggleComplete(id) {
     var t = tasks.find(function (t) { return t.id === id; });
@@ -369,10 +433,11 @@
   }
 
   function deleteTask(id) {
-    if (!confirm('Bu çalışmayı silmek istediğinize emin misiniz?')) return;
-    tasks = tasks.filter(function (t) { return t.id !== id; });
-    saveTasks();
-    render();
+    askConfirm('Bu çalışmayı silmek istediğinize emin misiniz?', function () {
+      tasks = tasks.filter(function (t) { return t.id !== id; });
+      saveTasks();
+      render();
+    }, { title: 'Çalışmayı sil', okLabel: 'Sil' });
   }
 
   function editTaskById(id) {
@@ -382,18 +447,20 @@
 
   els.resetWeekBtn.addEventListener('click', function () {
     if (!tasks.length) return;
-    if (!confirm('Tüm görevlerin tamamlanma durumu sıfırlanacak (görevler silinmeyecek). Yeni haftaya başlamak istediğinize emin misiniz?')) return;
-    tasks.forEach(function (t) { t.completed = false; });
-    saveTasks();
-    render();
+    askConfirm('Tüm görevlerin tamamlanma durumu sıfırlanacak (görevler silinmeyecek). Yeni haftaya başlamak istediğinize emin misiniz?', function () {
+      tasks.forEach(function (t) { t.completed = false; });
+      saveTasks();
+      render();
+    }, { title: 'Haftayı sıfırla', okLabel: 'Sıfırla' });
   });
 
   els.clearAllBtn.addEventListener('click', function () {
     if (!tasks.length) return;
-    if (!confirm('TÜM çalışmalar kalıcı olarak silinecek. Bu işlem geri alınamaz. Onaylıyor musunuz?')) return;
-    tasks = [];
-    saveTasks();
-    render();
+    askConfirm('TÜM çalışmalar kalıcı olarak silinecek. Bu işlem geri alınamaz. Onaylıyor musunuz?', function () {
+      tasks = [];
+      saveTasks();
+      render();
+    }, { title: 'Tüm çalışmaları temizle', okLabel: 'Temizle' });
   });
 
   // ---------- RENDER ----------
